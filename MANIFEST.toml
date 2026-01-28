@@ -1,0 +1,8 @@
+uuid = "3713d8f5-72b0-401d-9ec9-3818380bc576"
+name = "Add to Collection"
+homepage = "https://github.com/dvirtz/picard-plugin-add-to-collection"
+authors = ["Dvir Yitzchaki (dvirtz@gmail.com)"]
+description = "Adds any saved release to one of your user collections"
+api = ["3.0"]
+license = "MIT"
+license_url = "https://spdx.org/licenses/MIT.html"
