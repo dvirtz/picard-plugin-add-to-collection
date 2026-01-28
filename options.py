@@ -1,34 +1,41 @@
 from picard.collection import Collection, user_collections
-from picard.ui.options import OptionsPage, register_options_page
+from picard.plugin3.api import OptionsPage, PluginApi
 
-from picard.plugins.add_to_collection import settings
-from picard.plugins.add_to_collection.manifest import PLUGIN_NAME
-from picard.plugins.add_to_collection.ui_add_to_collection_options import (
-    Ui_AddToCollectionOptions,
-)
-from picard.plugins.add_to_collection.override_module import override_module
+from .ui_add_to_collection_options import Ui_AddToCollectionOptions
+
+COLLECTION_ID = "add_to_collection_id"
 
 
 class AddToCollectionOptionsPage(OptionsPage):
     NAME = "add-to-collection"
-    TITLE = PLUGIN_NAME
+    TITLE = "Add to Collection"
     PARENT = "plugins"
-
-    options = [settings.collection_id_option()]
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
+
+        self.api.plugin_config.register_option(COLLECTION_ID, default="")
+
         self.ui = Ui_AddToCollectionOptions()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self, self.api)
 
     def load(self) -> None:
-        self.set_collection_name(settings.collection_id())
+        self.set_collection_name(self.api.plugin_config[COLLECTION_ID] or "")
 
     def save(self) -> None:
-        settings.set_collection_id(self.ui.collection_name.currentData())
+        self.api.plugin_config[COLLECTION_ID] = self.ui.collection_name.currentData()
 
     def set_collection_name(self, value: str) -> None:
         self.ui.collection_name.clear()
+        if len(user_collections) == 0:
+            self.ui.set_error(
+                self.api.tr(
+                    "no.collections",
+                    "No collections found. If you are not logged in, log in and restart Picard",
+                )
+            )
+        else:
+            self.ui.set_error("")
         collection: Collection
         for collection in sorted(user_collections.values(), key=lambda c: c.name.lower()):
             self.ui.collection_name.addItem(collection.name, collection.id)
@@ -37,6 +44,5 @@ class AddToCollectionOptionsPage(OptionsPage):
             self.ui.collection_name.setCurrentIndex(idx)
 
 
-def register_options() -> None:
-    with override_module(AddToCollectionOptionsPage):
-        register_options_page(AddToCollectionOptionsPage)
+def register_options(api: PluginApi) -> None:
+    api.register_options_page(AddToCollectionOptionsPage)
