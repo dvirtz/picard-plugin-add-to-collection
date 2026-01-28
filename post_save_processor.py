@@ -1,17 +1,19 @@
+from typing import Optional
+
 from picard import log
 from picard.collection import Collection, user_collections
-from picard.file import File, register_file_post_save_processor
+from picard.file import File
+from picard.plugin3.api import PluginApi
 
-from picard.plugins.add_to_collection import settings
-from picard.plugins.add_to_collection.override_module import override_module
+from .options import COLLECTION_ID
 
 
-def post_save_processor(file: File) -> None:
-    collection_id = settings.collection_id()
+def post_save_processor(api: PluginApi, file: File) -> None:
+    collection_id = api.plugin_config[COLLECTION_ID]
     if not collection_id:
         log.error("cannot find collection ID setting")
         return
-    collection: Collection = user_collections.get(collection_id)
+    collection: Optional[Collection] = user_collections.get(collection_id)
     if not collection:
         log.error(f"cannot find collection with id {collection_id}")
         return
@@ -21,6 +23,5 @@ def post_save_processor(file: File) -> None:
         collection.add_releases(set([release_id]), callback=lambda: None)
 
 
-def register_processor() -> None:
-    with override_module(post_save_processor):
-        register_file_post_save_processor(post_save_processor)
+def register_processor(api: PluginApi) -> None:
+    api.register_file_post_save_processor(post_save_processor)

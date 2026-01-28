@@ -1,5 +1,9 @@
-from picard.plugins.add_to_collection.manifest import *  # noqa: F403
-from picard.plugins.add_to_collection import options, post_save_processor  # noqa: F403
+from picard.plugin3.api import PluginApi
 
-options.register_options()
-post_save_processor.register_processor()
+from .options import register_options
+from .post_save_processor import register_processor
+
+
+def enable(api: PluginApi):
+    register_options(api)
+    register_processor(api)
