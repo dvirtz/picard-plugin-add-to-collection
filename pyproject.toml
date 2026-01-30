@@ -1,0 +1,30 @@
+[project]
+name = "picard-plugin-add-to-collection"
+version = "0.0.0"
+description = "Picard plugin to add releases to MusicBrainz collections"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+  { name = "Dvir Yitzchaki", email = "dvirtz@gmail.com" }
+]
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = [
+    "picard>=2.13.3",
+    "python-semantic-release>=10.5.3",
+    "ruff>=0.14.14",
+]
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.semantic_release.branches.main]
+match = "beta"
+prerelease = true
+prerelease_token = "beta"
