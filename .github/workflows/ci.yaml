@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, beta]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install gettext (for msgfmt)
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+      - name: Format with ruff
+        run: uv run ruff format --check .
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ case(github.event_name == 'push', github.ref_name, github.head_ref)  }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install gettext (for msgfmt)
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@v10.5.3
+        with:          
+          no_operation_mode: ${{ github.event_name != 'push' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_name: "github-actions"
+          git_committer_email: "actions@users.noreply.github.com"
