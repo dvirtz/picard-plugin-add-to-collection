@@ -16,9 +16,7 @@ class Ui_AddToCollectionOptions(object):
         self.collection_name = QtWidgets.QComboBox(AddToCollectionOptions)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.collection_name.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy.setHeightForWidth(self.collection_name.sizePolicy().hasHeightForWidth())
         self.collection_name.setSizePolicy(sizePolicy)
         self.collection_name.setEditable(False)
         self.collection_name.setObjectName("collection_name")
@@ -32,6 +30,6 @@ class Ui_AddToCollectionOptions(object):
         QtCore.QMetaObject.connectSlotsByName(AddToCollectionOptions)
 
     def retranslateUi(self, AddToCollectionOptions):
-        _translate = QtCore.QCoreApplication.translate
+        _ = QtCore.QCoreApplication.translate
         AddToCollectionOptions.setWindowTitle(_("Form"))
         self.collection_label.setText(_("Collection to add releases to:"))
