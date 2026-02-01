@@ -25,6 +25,10 @@ target-version = "py311"
 quote-style = "double"
 
 [tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+
+[tool.semantic_release.branches.beta]
 match = "beta"
 prerelease = true
 prerelease_token = "beta"
