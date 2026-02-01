@@ -24,3 +24,7 @@ target-version = "py311"
 [tool.ruff.format]
 quote-style = "double"
 
+[tool.semantic_release.branches.main]
+match = "beta"
+prerelease = true
+prerelease_token = "beta"
