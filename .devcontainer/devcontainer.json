@@ -1,31 +1,33 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "Python 3",
+	"name": "qt-dev",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:3.11",
-	"features": {
-		"ghcr.io/ttyrho/devcontainer-features/gcc:1": {}
+	"build": {
+		"dockerfile": "./Dockerfile",
+		"args": {
+			"QT_VERSION": "6.8.3"
+		}
 	},
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {}
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pipx install uv",
-
+	"postCreateCommand": "uv run pre-commit install || { echo '--- pre-commit.log ---'; cat ~/.cache/pre-commit/pre-commit.log || true; exit 1; }",
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"GitHub.copilot",
+				"github.vscode-github-actions",
+				"vivaxy.vscode-conventional-commits"
 			]
 		}
-	}
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	},
+	// Use a non-root user to avoid git safe.directory issues with mounted directories.
+	"remoteUser": "vscode"
 }
