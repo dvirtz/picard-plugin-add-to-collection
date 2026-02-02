@@ -8,38 +8,31 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11"]
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install UV
-        uses: astral-sh/setup-uv@v3
-
-      - name: Install gettext (for msgfmt)
-        run: sudo apt-get update && sudo apt-get install -y gettext
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Lint with ruff
-        run: uv run ruff check .
-
-      - name: Format with ruff
-        run: uv run ruff format --check .
-
-      - name: Install plugin
-        run: uv run picard-plugins -y --install ./
-
-      - name: Verify plugin is installed and enabled
-        run: uv run picard-plugins --list | grep -i "Add to Collection (enabled)"
+      - name: Run tests in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/${{ github.repository_owner }}/picard-plugin-add-to-collection-devcontainer
+          cacheFrom: ghcr.io/${{ github.repository_owner }}/picard-plugin-add-to-collection-devcontainer
+          push: always
+          runCmd: |
+            uv run ruff check .
+            uv run ruff format --check .
+            uv run picard-plugins -y --install ./
+            uv run picard-plugins --list --no-color | tee /tmp/plugin-list.txt | grep "Add to Collection (enabled)" || { cat /tmp/plugin-list.txt; exit 1; }
 
   release:
     needs: test
