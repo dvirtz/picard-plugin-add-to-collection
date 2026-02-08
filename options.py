@@ -9,12 +9,9 @@ COLLECTION_ID = "add_to_collection_id"
 class AddToCollectionOptionsPage(OptionsPage):
     NAME = "add-to-collection"
     TITLE = "Add to Collection"
-    PARENT = "plugins"
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-
-        self.api.plugin_config.register_option(COLLECTION_ID, default="")
 
         self.ui = Ui_AddToCollectionOptions()
         self.ui.setupUi(self, self.api)
@@ -46,3 +43,4 @@ class AddToCollectionOptionsPage(OptionsPage):
 
 def register_options(api: PluginApi) -> None:
     api.register_options_page(AddToCollectionOptionsPage)
+    api.plugin_config.register_option(COLLECTION_ID, default="")

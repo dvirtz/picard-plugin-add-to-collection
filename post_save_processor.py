@@ -2,8 +2,7 @@ from typing import Optional
 
 from picard import log
 from picard.collection import Collection, user_collections
-from picard.file import File
-from picard.plugin3.api import PluginApi
+from picard.plugin3.api import File, PluginApi
 
 from .options import COLLECTION_ID
 
