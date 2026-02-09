@@ -27,6 +27,9 @@ target-version = "py311"
 [tool.ruff.format]
 quote-style = "double"
 
+[tool.semantic_release.commit_parser_options]
+patch_tags = ["fix", "perf", "refactor", "ci"]
+
 [tool.semantic_release.branches.main]
 match = "main"
 prerelease = false
